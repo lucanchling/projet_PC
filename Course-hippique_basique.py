@@ -93,17 +93,15 @@ def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
 
 # Fonction servant de juge de ligne : 
 def arbitre():
-    # Permet de savoir qui est le gagant
-    if max(Positions) == LONGEUR_COURSE-1:
-        keep_running = False # Variable mettant fin à la course
-    else:
+    Pos_loc = Positions[:]
+    if max(Pos_loc) < LONGEUR_COURSE-1:
         indiceMaxi,indiceMini = 0,0
         # Recherche de la position de la valeur Maximale & Minimale dans le tableau
-        if max(Positions) < LONGEUR_COURSE-1:
-            for indice, valeur in enumerate(Positions):
-                if valeur == max(Positions):
+        if max(Pos_loc) < LONGEUR_COURSE-1:
+            for indice, valeur in enumerate(Pos_loc):
+                if valeur == max(Pos_loc):
                     indiceMaxi = indice
-                if valeur == min(Positions):
+                if valeur == min(Pos_loc):
                     indiceMini = indice
 
         # Conversion en lettre
@@ -111,7 +109,25 @@ def arbitre():
         codeLettreLast = 65 + indiceMini # ....
         move_to(Nb_process+5, 1)
         print('The leader is the horse :',chr(codeLettreLead), 'And the last is the horse :', chr(codeLettreLast))
-        
+    # Permet de savoir qui est le gagant
+    else :
+        keep_running = False # Variable mettant fin à la course
+
+# def arbitre():
+#     liste_chv = [i for i in range(Nb_process)]
+#     winner = -1
+#     Pos_loc = Positions[:]
+#     while len(liste_chv)>1:
+#         try :
+#             first = Pos_loc.index(LONGEUR_COURSE-1)
+#             if winner == -1:
+#                 winner = first
+#             liste_chv.remove(first)
+#         except: pass
+#     looser = liste_chv[0]
+#     move_to(Nb_process+5, 1)
+#     print('The winner is the horse :',chr(65+winner))
+
 #------------------------------------------------
 
 if __name__ == "__main__" :
@@ -132,7 +148,7 @@ if __name__ == "__main__" :
         mes_process[i].start()
     
     # Lancement de la fonction arbitre
-    while keep_running.value :
+    while keep_running.value:
         arbitre()
     
     move_to(Nb_process+10, 1)

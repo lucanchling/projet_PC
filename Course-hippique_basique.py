@@ -44,7 +44,7 @@ CL_WHITE="\033[01;37m"                  #  Blanc
 
 #-------------------------------------------------------
 
-from multiprocessing import Process, Value, Lock
+from multiprocessing import Process, Value, Lock, Array
 import os, time,math, random, sys
 from array import array  # Attention : différent des 'Array' des Process
 
@@ -71,37 +71,71 @@ def en_rouge() : print(CL_RED,end='')
 def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
     # move_to(20, 1); print("Le chaval ", chr(ord('A')+ma_ligne), " démarre ...")
     col=1
+    
+
 
     while col < LONGEUR_COURSE and keep_running.value :
+        
+        verrou.acquire()  # verrouillage
+        
+        
+
         move_to(ma_ligne+1,col) # pour effacer toute ma ligne
         erase_line_from_beg_to_curs()
         en_couleur(lyst_colors[ma_ligne%len(lyst_colors)])
         print('('+chr(ord('A')+ma_ligne)+'>')
 
+        verrou.release() # déverrouillage 
+
+        Positions[ma_ligne]= col
         col+=1
         time.sleep(0.1 * random.randint(1,5))
 
+# Fonction servant de juge de ligne : 
+def arbitre():
+    indiceMaxi = 0
+    # Recherche de la position de la valeur Maximale
+    valeurMax = max(Positions)
+    for indice, valeur in enumerate(Positions):
+        if valeur == valeurMax:
+            indiceMaxi = indice
+    # Conversion en lettre
+    codeLettre = 65 + indiceMaxi # 65 --> code ASCII de A
+    move_to(Nb_process+5, 1)
+    print('The leader is the horse : ',chr(codeLettre))
+    
 #------------------------------------------------
 
 if __name__ == "__main__" :
     Nb_process=20
     mes_process = [0 for i in range(Nb_process)]
+    
+    verrou = Lock()  # Création du lock pour l'exclusion mutuelle
+    
+    Positions = Array('i',[0 for i in range(Nb_process)])  # tableau partagé des positions des chevaux 
 
     LONGEUR_COURSE = 100
     effacer_ecran()
     curseur_invisible()
 
+
     for i in range(Nb_process):  # Lancer     Nb_process  processus
         mes_process[i] = Process(target=un_cheval, args= (i,))
         mes_process[i].start()
-
+    
+    # Lancement de la fonction arbitre
+    while keep_running.value:
+        arbitre()
+    
     move_to(Nb_process+10, 1)
+    
+
     print("tous lancés")
 
 
 
     for i in range(Nb_process): mes_process[i].join()
-
+    keep_running = False # Variable mettant fin à la course
     move_to(24, 1)
     curseur_visible()
     print("Fini")

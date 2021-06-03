@@ -93,17 +93,25 @@ def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
 
 # Fonction servant de juge de ligne : 
 def arbitre():
-    indiceMaxi = 0
-    # Recherche de la position de la valeur Maximale
-    valeurMax = max(Positions)
-    for indice, valeur in enumerate(Positions):
-        if valeur == valeurMax:
-            indiceMaxi = indice
-    # Conversion en lettre
-    codeLettre = 65 + indiceMaxi # 65 --> code ASCII de A
-    move_to(Nb_process+5, 1)
-    print('The leader is the horse : ',chr(codeLettre))
-    
+    # Permet de savoir qui est le gagant
+    if max(Positions) == LONGEUR_COURSE-1:
+        keep_running = False # Variable mettant fin à la course
+    else:
+        indiceMaxi,indiceMini = 0,0
+        # Recherche de la position de la valeur Maximale & Minimale dans le tableau
+        if max(Positions) < LONGEUR_COURSE-1:
+            for indice, valeur in enumerate(Positions):
+                if valeur == max(Positions):
+                    indiceMaxi = indice
+                if valeur == min(Positions):
+                    indiceMini = indice
+
+        # Conversion en lettre
+        codeLettreLead = 65 + indiceMaxi # 65 --> code ASCII de A
+        codeLettreLast = 65 + indiceMini # ....
+        move_to(Nb_process+5, 1)
+        print('The leader is the horse :',chr(codeLettreLead), 'And the last is the horse :', chr(codeLettreLast))
+        
 #------------------------------------------------
 
 if __name__ == "__main__" :
@@ -114,7 +122,7 @@ if __name__ == "__main__" :
     
     Positions = Array('i',[0 for i in range(Nb_process)])  # tableau partagé des positions des chevaux 
 
-    LONGEUR_COURSE = 100
+    LONGEUR_COURSE = 10
     effacer_ecran()
     curseur_invisible()
 
@@ -124,18 +132,16 @@ if __name__ == "__main__" :
         mes_process[i].start()
     
     # Lancement de la fonction arbitre
-    while keep_running.value:
+    while keep_running.value :
         arbitre()
     
     move_to(Nb_process+10, 1)
     
-
     print("tous lancés")
 
 
-
+    
     for i in range(Nb_process): mes_process[i].join()
-    keep_running = False # Variable mettant fin à la course
     move_to(24, 1)
     curseur_visible()
     print("Fini")

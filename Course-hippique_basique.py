@@ -77,8 +77,6 @@ def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
     while col < LONGEUR_COURSE and keep_running.value :
         
         verrou.acquire()  # verrouillage
-        
-        
 
         move_to(ma_ligne+1,col) # pour effacer toute ma ligne
         erase_line_from_beg_to_curs()
@@ -93,25 +91,15 @@ def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
 
 # Fonction servant de juge de ligne : 
 def arbitre():
-    Pos_loc = Positions[:]
-    if max(Pos_loc) < LONGEUR_COURSE-1:
+    while keep_running.value:
+        Pos_loc = Positions[:]
         indiceMaxi,indiceMini = 0,0
         # Recherche de la position de la valeur Maximale & Minimale dans le tableau
-        if max(Pos_loc) < LONGEUR_COURSE-1:
-            for indice, valeur in enumerate(Pos_loc):
-                if valeur == max(Pos_loc):
-                    indiceMaxi = indice
-                if valeur == min(Pos_loc):
-                    indiceMini = indice
-
-        # Conversion en lettre
-        codeLettreLead = 65 + indiceMaxi # 65 --> code ASCII de A
-        codeLettreLast = 65 + indiceMini # ....
+        indiceMaxi = Pos_loc.index(max(Pos_loc))
+        indiceMini = Pos_loc.index(min(Pos_loc))
+        effacer_ecran()
         move_to(Nb_process+5, 1)
-        print('The leader is the horse :',chr(codeLettreLead), 'And the last is the horse :', chr(codeLettreLast))
-    # Permet de savoir qui est le gagant
-    else :
-        keep_running = False # Variable mettant fin à la course
+        print('The leader is the horse :',chr(indiceMaxi+65), 'And the last is the horse :', chr(indiceMini+65))
 
 # def arbitre():
 #     liste_chv = [i for i in range(Nb_process)]
@@ -135,7 +123,7 @@ if __name__ == "__main__" :
     mes_process = [0 for i in range(Nb_process)]
     
     verrou = Lock()  # Création du lock pour l'exclusion mutuelle
-    
+
     Positions = Array('i',[0 for i in range(Nb_process)])  # tableau partagé des positions des chevaux 
 
     LONGEUR_COURSE = 10
@@ -148,16 +136,16 @@ if __name__ == "__main__" :
         mes_process[i].start()
     
     # Lancement de la fonction arbitre
-    while keep_running.value:
-        arbitre()
+    # arbitreProc = Process(target=arbitre)
+    # arbitreProc.start()
     
     move_to(Nb_process+10, 1)
     
     print("tous lancés")
-
-
-    
     for i in range(Nb_process): mes_process[i].join()
+    
+    # arbitreProc.join()
+    
     move_to(24, 1)
     curseur_visible()
     print("Fini")

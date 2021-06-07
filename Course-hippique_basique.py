@@ -92,14 +92,14 @@ def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
 # Fonction servant de juge de ligne : 
 def arbitre():
     while keep_running.value:
-        Pos_loc = Positions[:]
-        indiceMaxi,indiceMini = 0,0
-        # Recherche de la position de la valeur Maximale & Minimale dans le tableau
-        indiceMaxi = Pos_loc.index(max(Pos_loc))
-        indiceMini = Pos_loc.index(min(Pos_loc))
-        effacer_ecran()
-        move_to(Nb_process+5, 1)
-        print('The leader is the horse :',chr(indiceMaxi+65), 'And the last is the horse :', chr(indiceMini+65))
+        Pos_loc = Positions[:]  # Copie des positions pour ne pas qu'il y ait de modifications entre temps
+        if max(Pos_loc) < LONGEUR_COURSE-1:  # Pour arrêter lorsque le premier franchit la ligne
+            indiceMaxi,indiceMini = 0,0
+            # Recherche de la position de la valeur Maximale & Minimale dans le tableau
+            indiceMaxi = Pos_loc.index(max(Pos_loc))
+            indiceMini = Pos_loc.index(min(Pos_loc))
+            move_to(Nb_process+5, 1)  # Déplacement du curseur
+            print('The leader is the horse :',chr(indiceMaxi+65), 'And the last is the horse :', chr(indiceMini+65)) # Ecriture de la ligne pour les positions
 
 # def arbitre():
 #     liste_chv = [i for i in range(Nb_process)]
@@ -130,21 +130,22 @@ if __name__ == "__main__" :
     effacer_ecran()
     curseur_invisible()
 
+    # Lancement de la fonction arbitre
+    arbitreProc = Process(target=arbitre)
+    arbitreProc.start()
 
     for i in range(Nb_process):  # Lancer     Nb_process  processus
         mes_process[i] = Process(target=un_cheval, args= (i,))
         mes_process[i].start()
     
-    # Lancement de la fonction arbitre
-    # arbitreProc = Process(target=arbitre)
-    # arbitreProc.start()
     
     move_to(Nb_process+10, 1)
+    
     
     print("tous lancés")
     for i in range(Nb_process): mes_process[i].join()
     
-    # arbitreProc.join()
+    arbitreProc.join()
     
     move_to(24, 1)
     curseur_visible()

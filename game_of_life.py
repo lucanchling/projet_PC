@@ -1,5 +1,6 @@
 import multiprocessing as mp
 from random import randint
+from math import floor
 import time
 import os
 
@@ -28,6 +29,30 @@ def color(couleur):
     print(couleur,end='')
 
 
+def voisins(taille_Grille,grille,position):
+    nbVoisin=0
+    iVoisin=[1,-1,long_horiz,-long_horiz,long_horiz+1,long_horiz-1,-long_horiz-1,-long_horiz+1]
+
+
+
+def Death_Or_Alive(nbVoisin,position,taille_Grille):
+    ma_Grille=[]
+
+
+
+if (long_horiz%2)==0:
+    long_partag==long_horiz*0.5
+else:
+    long_partag==floor(long_horiz*0.5)
+    long_partag2==long_partag+1
+
+
 grille=mp.Array('i',[randint(0,1) for i in range(nb_cellule)])
 
 affiche_Grille(long_horiz,grille)
+
+for i in range (nb_proc):
+        tab_pid[i]=mp.Process(target=Death_Or_Alive,args=(nbVoisin,position,taille_Grille)) 
+        tab_pid[i].start()
+
+

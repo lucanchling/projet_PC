@@ -1,8 +1,9 @@
 import math, random
 from array import array
+import time
 
 def merge(left, right):
-    tableau = array('i', [])  # tableau vide qui re�oit les r�sultats
+    tableau = array('i', [])  # tableau vide qui re�oit les r�sultats
     while len(left) > 0 and len(right) > 0:
         if left[0] < right[0]: tableau.append(left.pop(0))
         else: tableau.append(right.pop(0))
@@ -22,15 +23,34 @@ def merge_sort(Tableau):
 
 def version_de_base(N):
     Tab = array('i', [random.randint(0, 2 * N) for _ in range(N)]) 
-    print("Avant : ", Tab)
+    #print("Avant : ", Tab)
     start=time.time()
     Tab = merge_sort(Tab)
     end=time.time()
-    print("Apr�s : ", Tab)
-    print("Le temps avec 1 seul Process = %f pour un tableau de %d eles " % ((end-start)*1000, N))
+    #print("Après : ", Tab)
+    print("Le temps avec 1 seul Process = %f pour un tableau de %d éléments " % ((end-start)*1000, N))
     
-    print("V�rifions que le tri est correct --> ", end='')
+    print("Vérifions que le tri est correct --> ", end='')
     try :
         assert(all([(Tab[i] <= Tab[i+1]) for i in range(N-1)]))
         print("Le tri est OK !")
-    except : print(" Le tri n'a pas march� !")
+    except : print(" Le tri n'a pas marché !")
+
+
+def tri_sur_place(N):
+    Tab = array('i', [random.randint(0, 2 * N) for _ in range(N)]) 
+    #print("Avant : ", Tab)
+    start=time.time()
+    Tab = merge_sort(Tab)
+    end=time.time()
+    #print("Après : ", Tab)
+    print("Le temps avec 1 seul Process = %f pour un tableau de %d éléments " % ((end-start)*1000, N))
+    
+    print("Vérifions que le tri est correct --> ", end='')
+    try :
+        assert(all([(Tab[i] <= Tab[i+1]) for i in range(N-1)]))
+        print("Le tri est OK !")
+    except : print(" Le tri n'a pas marché !")
+
+N = 1000
+version_de_base(N)

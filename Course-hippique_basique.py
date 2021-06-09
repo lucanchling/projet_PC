@@ -85,7 +85,7 @@ def un_cheval(ma_ligne : int) : # ma_ligne commence à 0
 
         verrou.release() # déverrouillage 
 
-        Positions[ma_ligne]= col
+        Positions[ma_ligne]= col  # Récupération de la positions de chacun des chevaux dans un tableau partagé
         col+=1
         time.sleep(0.1 * random.randint(1,5))
 
@@ -98,10 +98,11 @@ def arbitre():
             # Recherche de la position de la valeur Maximale & Minimale dans le tableau
             indiceMaxi = Pos_loc.index(max(Pos_loc))
             indiceMini = Pos_loc.index(min(Pos_loc))
-            effacer_ecran()
+            # Gestion de l'affichage 
+            effacer_ecran()  # On efface le contenu présent sur l'écran pour pouvoir le modifier
             move_to(Nb_process+5, 1)  # Déplacement du curseur
             print('The leader is the horse :',chr(indiceMaxi+65), 'And the last is the horse :', chr(indiceMini+65)) # Ecriture de la ligne pour les positions
-            time.sleep(1.5)
+            time.sleep(1.5)  # Laps de temps pour la maj des score en direct
 
 
 
@@ -145,7 +146,7 @@ if __name__ == "__main__" :
     
     print("tous lancés")
     
-    # Lancement de la fonction arbitre
+    # Lancement de la fonction arbitre avec un processus
     arbitreProc = Process(target=arbitre)
     arbitreProc.start()
     

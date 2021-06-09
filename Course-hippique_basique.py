@@ -98,8 +98,12 @@ def arbitre():
             # Recherche de la position de la valeur Maximale & Minimale dans le tableau
             indiceMaxi = Pos_loc.index(max(Pos_loc))
             indiceMini = Pos_loc.index(min(Pos_loc))
+            effacer_ecran()
             move_to(Nb_process+5, 1)  # Déplacement du curseur
             print('The leader is the horse :',chr(indiceMaxi+65), 'And the last is the horse :', chr(indiceMini+65)) # Ecriture de la ligne pour les positions
+            time.sleep(1.5)
+
+
 
 # def arbitre():
 #     liste_chv = [i for i in range(Nb_process)]
@@ -126,13 +130,10 @@ if __name__ == "__main__" :
 
     Positions = Array('i',[0 for i in range(Nb_process)])  # tableau partagé des positions des chevaux 
 
-    LONGEUR_COURSE = 10
+    LONGEUR_COURSE = 100
     effacer_ecran()
     curseur_invisible()
 
-    # Lancement de la fonction arbitre
-    arbitreProc = Process(target=arbitre)
-    arbitreProc.start()
 
     for i in range(Nb_process):  # Lancer     Nb_process  processus
         mes_process[i] = Process(target=un_cheval, args= (i,))
@@ -143,6 +144,11 @@ if __name__ == "__main__" :
     
     
     print("tous lancés")
+    
+    # Lancement de la fonction arbitre
+    arbitreProc = Process(target=arbitre)
+    arbitreProc.start()
+    
     for i in range(Nb_process): mes_process[i].join()
     
     arbitreProc.join()

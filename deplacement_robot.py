@@ -90,7 +90,7 @@ def us():
 
 # Permet la gestion du contact en front
 def bumper():
-    mem_Cmd[1]=Cmd.Front.value
+    return False
 
 #------------------------------------------------
 # Enumeration pour de la clarté dans le code 
@@ -120,9 +120,6 @@ if __name__ == "__main__" :
     Flag_Right = Value('b',False)
     Flag_Left = Value('b',False)
     # Les mémoires partagées :
-
-    mem_Cmd = Array('i',[0 for i in range(10)])  # tableau partagé des commandes
+    indice = Value('i',0) # Indices permettant la numérotation aisin que l'écriture des commandes
+    mem_Cmd = Array('i',[0 for i in range(100000)])  # tableau partagé des commandes
     mem_Flag = Array('i',[0 for i in range(100000)])  # Tableau partagé des drapeaux
-
-    bumper()
-    print(mem_Cmd)

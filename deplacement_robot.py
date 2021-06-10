@@ -74,11 +74,23 @@ def en_rouge() : print(CL_RED,end='')
 #------------------------------------------------
 # Permet la construction de la grille
 def grille(n):
+    # Initialisation d'une grille partagée de taille n^2
     try :
         grille = sa.create("shm://grille", dtype=int,shape=(n,n))
     except FileExistsError:
         sa.delete("grille")
         grille = sa.create("shm://grille", dtype=int,shape=(n,n))
+    # Mise en place des obstacles :
+    for i in range(n):
+        j = random.randint(0,n-1)
+        grille[i][j]=Case.Obstacle.value
+    # Positionnement du robot sur une case vide
+    i,j=n//2,n//2
+    while grille[i][j] == Case.Obstacle.value:
+        i+=1
+        j+=1
+    grille[i][j] = Case.Robot.value
+
     return grille
 
 # Permet d'utiliser conjointement les différents capteurs afin de contrôler le robot 
@@ -109,11 +121,11 @@ class Cmd(Enum):
     Front = 1
     Rigth = 2
     Left = 3
-# Pour les drapeaux :
-class Flag(Enum):
-    Front = 1
-    Rigth = 2
-    Left = 3
+# Pour les différentes valeurs dans la grille :
+class Case(Enum):
+    Blank = 0
+    Obstacle = 1
+    Robot = 2
 #------------------------------------------------
 if __name__ == "__main__" :
 

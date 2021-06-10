@@ -98,8 +98,16 @@ def controleur():
     return False
 
 # Permet l'affichage sur l'écran (I suppose)
-def ecran():
-    return False
+temps_Ecran = Value('i',1) # Initialisation du temps pour la fonction écran
+def ecran(n):
+    print(grille(n))
+    tic = time.time()
+    while True:
+        # Pour le faire toutes les A secondes
+        if (tic-time.time)%temps_Ecran == 0:    
+            Verrou.acquire()
+            # Ici : gestion de l'affichage du déplacement
+            Verrou.release()
 
 # Permet la gestion des capteurs (Left & Right)
 def ir():
@@ -152,4 +160,6 @@ if __name__ == "__main__" :
     #     except ValueError:
     #         print("Saisir un entier !! ")
     
-    print(grille(taille_grille))
+    Process_Ecran = Process(target=ecran, args=(taille_grille,))
+    Process_Ecran.start()
+    

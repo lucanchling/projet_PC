@@ -48,7 +48,7 @@ CL_WHITE="\033[01;37m"                  #  Blanc
 
 from multiprocessing import Process, Value, Lock, Array
 import os, time,math, random, sys
-
+from enum import Enum
 #------------------------------------------------
 
 
@@ -90,22 +90,39 @@ def us():
 
 # Permet la gestion du contact en front
 def bumper():
-    return False
+    mem_Cmd[1]=Cmd.Front.value
 
 #------------------------------------------------
-
+# Enumeration pour de la clarté dans le code 
+# Utilisation en name_of_class.{}
+# Pour les commandes :
+class Cmd(Enum):
+    Front = 1
+    Rigth = 2
+    Left = 3
+# Pour les drapeaux :
+class Flag(Enum):
+    Front = 1
+    Rigth = 2
+    Left = 3
+#------------------------------------------------
 if __name__ == "__main__" :
-
 
     # Déclaration des différentes Variables :
     
     Verrou = Lock()
-    Front = Value('d',0.0)
-    Left = Value('d',0.0)
-    Right = Value('d',0.0)
-    Drapeau = Value('b',False)
+    # Les différentes distances :
+    Dist_Front = Value('d',0.0)
+    Dist_Left = Value('d',0.0)
+    Dist_Right = Value('d',0.0)
+    # Les différents drapeaux
+    Flag_Front = Value('b',False)
+    Flag_Right = Value('b',False)
+    Flag_Left = Value('b',False)
+    # Les mémoires partagées :
 
+    mem_Cmd = Array('i',[0 for i in range(10)])  # tableau partagé des commandes
+    mem_Flag = Array('i',[0 for i in range(100000)])  # Tableau partagé des drapeaux
 
-
-
-    
+    bumper()
+    print(mem_Cmd)

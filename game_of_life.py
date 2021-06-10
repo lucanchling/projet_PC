@@ -33,15 +33,33 @@ def color(couleur):
     print(couleur,end='')
 
 
-def voisins(taille_Grille,grille,position):
+def voisins(taille_Grille,grille):
     nbVoisin=0
-    iVoisin=[1,-1,long_horiz,-long_horiz,long_horiz+1,long_horiz-1,-long_horiz-1,-long_horiz+1]
-    """for k in range(iVoisin):"""
+    lstvoisinou=[]
+    iVoisin=[[1,0],[-1,0],[0,1],[0,-1],[-1,-1],[1,-1],[-1,1],[1,1]]
+    for x in range(taille_Grille):
+        for y in range(taille_Grille):
+            nbVoisin=0
+            xr=0+x
+            yr=0+y
+            for t in iVoisin:
+                voisin=[xr+t[0],yr+t[1]]
+                if voisin[0]<taille_Grille and voisin[1]<taille_Grille and voisin[0]>=0 and voisin[1]>=0:
+                    if grille[voisin[1]+(voisin[0]*taille_Grille)]==1:
+                        nbVoisin+=1
+            lstvoisinou.append(nbVoisin)
+            
+    
+    #print(lstvoisinou) 
+    print(len(lstvoisinou))   
+    for i in range(long_horiz)     :
+        print(lstvoisinou[i*long_horiz : (i+1)*long_horiz])       
 
 
 
 
-def Death_Or_Alive(nbVoisin,position,taille_Grille,coordonnées):
+#def Death_Or_Alive(nbVoisin,position,taille_Grille,coordonnées):
+ #   for i in coordonnées()
     # ma_Grille=[]
     # état==0
     # if nbVoisin<=2:
@@ -52,25 +70,26 @@ def Death_Or_Alive(nbVoisin,position,taille_Grille,coordonnées):
     #     état==0
     
 
- long_partag=0
- long_partag2=0
- if (long_horiz%2)==0:
+long_partag=0
+long_partag2=0
+if (long_horiz%2)==0:
     long_partag==long_horiz*0.5
-    coordonnées=[[0,long_partag],[long_partag,0],[0,long_partag+1],[long_partag,0],[0,long_partag],[long_partag+1,0],[]]
- else:
+    coordonnées=[[0,0],[long_partag,long_partag],[0,long_partag+1],[long_partag,long_partag*2],[long_partag+1,0],[2*long_partag,long_partag],[long_partag+1,long_partag+1],[2*long_partag,2*long_partag]]
+else:
     long_partag==floor(long_horiz*0.5)
-     long_partag2==long_partag+1
-
+    long_partag2=long_partag+1
+    coordonnées=[[0,0],[long_partag,long_partag],[0,long_partag+1],[long_partag,long_partag*2],[long_partag+1,0],[2*long_partag,long_partag],[long_partag+1,long_partag+1],[2*long_partag,2*long_partag]]
 
 grille=mp.Array('i',[randint(0,1) for i in range(nb_cellule)])
 
 affiche_Grille(long_horiz,grille)
+voisins(long_horiz,grille)
 #print(grille[:])
 
 
 
-for i in range (nb_proc):
-        tab_pid[i]=mp.Process(target=Death_Or_Alive,args=(nbVoisin,position,taille_Grille,coordonnées)) 
-        tab_pid[i].start()
+# for i in range (nb_proc):
+#         tab_pid[i]=mp.Process(target=Death_Or_Alive,args=(nbVoisin,position,taille_Grille,coordonnées)) 
+#         tab_pid[i].start()
 
 

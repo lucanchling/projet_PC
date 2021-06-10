@@ -72,6 +72,34 @@ def en_couleur(Coul) : print(Coul,end='')
 def en_rouge() : print(CL_RED,end='')
 
 #------------------------------------------------
+# Enumeration pour de la clarté dans le code 
+# Utilisation en name_of_class.{}
+# Pour les commandes :
+class Cmd(Enum):
+    Front = 1
+    Rigth = 2
+    Left = 3
+# Pour les différentes valeurs dans la grille :
+class Case(Enum):
+    Blank = 0
+    Obstacle = 1
+    Robot = 2
+#------------------------------------------------
+
+##################
+# Les Constantes #
+##################
+
+#------------------------------------------------
+temps_Ecran = Value('i',1) # Initialisation du temps pour la fonction écran
+temps_Ir = Value('i',1) # Initialisation du temps pour la fonction ir
+#------------------------------------------------
+
+#################
+# Les Fonctions #
+#################
+
+#------------------------------------------------
 # Permet la construction de la grille
 def grille(n):
     # Initialisation d'une grille partagée de taille n^2
@@ -98,20 +126,23 @@ def controleur():
     return False
 
 # Permet l'affichage sur l'écran (I suppose)
-temps_Ecran = Value('i',1) # Initialisation du temps pour la fonction écran
 def ecran(n):
     print(grille(n))
     tic = time.time()
     while True:
-        # Pour le faire toutes les A secondes
-        if (tic-time.time)%temps_Ecran == 0:    
+        # Pour le faire toutes les temps_Ecran secondes
+        if (tic-time.time())%temps_Ecran == 0:    
             Verrou.acquire()
             # Ici : gestion de l'affichage du déplacement
             Verrou.release()
 
 # Permet la gestion des capteurs (Left & Right)
 def ir():
-    return False
+    tic = time.time()
+    while True :
+        # Pour le faire toutes les temps_Ir secondes
+        if (tic-time.time())%temps_Ir == 0:    
+            return False
 
 # Permet la gestion du capteur (US = Front)
 def us():
@@ -121,19 +152,6 @@ def us():
 def bumper():
     return False
 
-#------------------------------------------------
-# Enumeration pour de la clarté dans le code 
-# Utilisation en name_of_class.{}
-# Pour les commandes :
-class Cmd(Enum):
-    Front = 1
-    Rigth = 2
-    Left = 3
-# Pour les différentes valeurs dans la grille :
-class Case(Enum):
-    Blank = 0
-    Obstacle = 1
-    Robot = 2
 #------------------------------------------------
 if __name__ == "__main__" :
 

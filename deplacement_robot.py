@@ -49,6 +49,7 @@ CL_WHITE="\033[01;37m"                  #  Blanc
 from multiprocessing import Process, Value, Lock, Array
 import os, time,math, random, sys
 from enum import Enum
+import SharedArray as sa 
 #------------------------------------------------
 
 
@@ -71,6 +72,14 @@ def en_couleur(Coul) : print(Coul,end='')
 def en_rouge() : print(CL_RED,end='')
 
 #------------------------------------------------
+# Permet la construction de la grille
+def grille(n):
+    try :
+        grille = sa.create("shm://grille", dtype=int,shape=(n,n))
+    except FileExistsError:
+        sa.delete("grille")
+        grille = sa.create("shm://grille", dtype=int,shape=(n,n))
+    return grille
 
 # Permet d'utiliser conjointement les différents capteurs afin de contrôler le robot 
 def controleur():
@@ -123,3 +132,12 @@ if __name__ == "__main__" :
     indice = Value('i',0) # Indices permettant la numérotation aisin que l'écriture des commandes
     mem_Cmd = Array('i',[0 for i in range(100000)])  # tableau partagé des commandes
     mem_Flag = Array('i',[0 for i in range(100000)])  # Tableau partagé des drapeaux
+
+    taille_grille = 10
+    # while taille_grille == 0:
+    #     try :
+    #         taille_grille = int(input("Taille de la grille carrée : "))
+    #     except ValueError:
+    #         print("Saisir un entier !! ")
+    
+    print(grille(taille_grille))

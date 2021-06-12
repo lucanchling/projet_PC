@@ -82,6 +82,7 @@ def Death_Or_Alive(nbVoisin,état):
             else:
                 if nbVoisin==3:
                     état==1
+            print(état)
             return état
 
 

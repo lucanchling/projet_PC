@@ -32,29 +32,7 @@ def affiche_Grille(taille_Grille,Grille):
 
 def color(couleur):
     print(couleur,end='')
-
-
-# def voisins(taille_Grille,grille):
-#     nbVoisin=0
-#     lstvoisinou=[]
-#     iVoisin=[[1,0],[-1,0],[0,1],[0,-1],[-1,-1],[1,-1],[-1,1],[1,1]]
-#     for x in range(taille_Grille):
-#         for y in range(taille_Grille):
-#             nbVoisin=0
-#             xr=0+x
-#             yr=0+y
-#             for t in iVoisin:
-#                 voisin=[xr+t[0],yr+t[1]]
-#                 if voisin[0]<taille_Grille and voisin[1]<taille_Grille and voisin[0]>=0 and voisin[1]>=0:
-#                     if grille[voisin[1]+(voisin[0]*taille_Grille)]==1:
-#                         nbVoisin+=1
-#             lstvoisinou.append(nbVoisin)
-            
-    
-#     #print(lstvoisinou) 
-#     print(len(lstvoisinou))   
-#     for i in range(long_horiz)     :
-#         print(lstvoisinou[i*long_horiz : (i+1)*long_horiz])       
+ 
 
 def nbVoisins(grille,taille_Grille,position):
     nbVoisin=0
@@ -91,15 +69,6 @@ def Death_Or_Alive(nbVoisin,état,étatn1):
 
     
 
-long_partag=0
-long_partag2=0
-if (long_horiz%2)==0:
-    long_partag==long_horiz*0.5
-    coordonnées=[[0,0],[long_partag,long_partag],[0,long_partag+1],[long_partag,long_partag*2],[long_partag+1,0],[2*long_partag,long_partag],[long_partag+1,long_partag+1],[2*long_partag,2*long_partag]]
-else:
-    long_partag==floor(long_horiz*0.5)
-    long_partag2=long_partag+1
-    coordonnées=[[0,0],[long_partag,long_partag],[0,long_partag+1],[long_partag,long_partag*2],[long_partag+1,0],[2*long_partag,long_partag],[long_partag+1,long_partag+1],[2*long_partag,2*long_partag]]
 
 grille=mp.Array('i',[randint(0,1) for i in range(nb_cellule)])
 grillen1=mp.Array('i',range(nb_cellule))
@@ -110,26 +79,15 @@ for i in range(nb_cellule):
     nb=nbVoisins(grille,long_horiz,i)
     étatnouveau=Death_Or_Alive(nb,grille[i],0)
     grillen1[i]=étatnouveau
-    
-    
 
 
+tab_pid=[0 for i in range (nb_proc)]
+for i in range (nb_proc):
+    for j in [i,i+100]:
+        tab_pid[i]=mp.Process(target=nbVoisins,args=(grille,long_horiz,j)) 
+        tab_pid[i].start()
 affiche_Grille(long_horiz,grille)
 #voisins(long_horiz,grille)
 #print(grille[:])
 affiche_Grille(long_horiz,grillen1)
-
-
-
-
-# tab_pid=[0 for i in range (nb_proc)]
-# for i in range (nb_proc):
-#     tab_pid[i]=mp.Process(target=Death_Or_Alive,args=(nbVoisin,état,étatn1)) 
-#     tab_pid[i].start()
-#     if (nb_cellule%2)==0:
-#         if (nb_cellule%nb_proc)==0:
-#             nb_cellule_chacun=nb_cellule/nb_proc
-        
-#     else:
-#         nb_cellule_chacun=nb_cellule
 

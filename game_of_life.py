@@ -71,19 +71,19 @@ def nbVoisins(grille,taille_Grille,position):
 
 
 
-def Death_Or_Alive(nbVoisin,état):
+def Death_Or_Alive(nbVoisin,état,étatn1):
             if état==1:
                 if nbVoisin<2:
-                    état==0
+                    étatn1=0
                 elif nbVoisin==2 or nbVoisin==3:
-                    état==1
+                    étatn1=1
                 elif nbVoisin>3:
-                    état==0
+                    étatn1=0
             else:
                 if nbVoisin==3:
-                    état==1
-            print(état)
-            return état
+                    étatn1=1
+            
+            return étatn1
 
 
 
@@ -108,8 +108,8 @@ grillen1=mp.Array('i',range(nb_cellule))
 
 for i in range(nb_cellule):
     nb=nbVoisins(grille,long_horiz,i)
-    étatn1=Death_Or_Alive(nb,grille[i])
-    grillen1[i]=étatn1
+    étatnouveau=Death_Or_Alive(nb,grille[i],0)
+    grillen1[i]=étatnouveau
     
     
 
@@ -124,7 +124,7 @@ affiche_Grille(long_horiz,grillen1)
 
 # tab_pid=[0 for i in range (nb_proc)]
 # for i in range (nb_proc):
-#     tab_pid[i]=mp.Process(target=Death_Or_Alive,args=(nbVoisin,position,long_horiz,état,grille)) 
+#     tab_pid[i]=mp.Process(target=Death_Or_Alive,args=(nbVoisin,état,étatn1)) 
 #     tab_pid[i].start()
 #     if (nb_cellule%2)==0:
 #         if (nb_cellule%nb_proc)==0:

@@ -86,8 +86,8 @@ for i in range (nb_proc):
     for j in [i,i+100]:
         tab_pid[i]=mp.Process(target=nbVoisins,args=(grille,long_horiz,j)) 
         tab_pid[i].start()
+
+    
 affiche_Grille(long_horiz,grille)
-#voisins(long_horiz,grille)
-#print(grille[:])
 affiche_Grille(long_horiz,grillen1)
 

@@ -49,6 +49,7 @@ CL_WHITE="\033[01;37m"                  #  Blanc
 from multiprocessing import Process, Value, Lock, Array
 import os, time,math, random, sys
 from enum import Enum
+from typing import ValuesView
 import SharedArray as sa 
 #------------------------------------------------
 
@@ -101,10 +102,10 @@ class Direction(Enum):
 ##################
 
 #------------------------------------------------
-temps_Ecran = Value('i',1) # Initialisation du temps pour la fonction écran
-temps_Ir = Value('i',1) # Initialisation du temps pour la fonction ir
+temps_Ecran = Value('d',.25) # Initialisation du temps pour la fonction écran
+temps_Ir = Value('d',.25) # Initialisation du temps pour la fonction ir
 temps_Controleur = Value('i',1) # Pour le controleur
-temps_US = Value('d',.5) # Pour le capteur US
+temps_US = Value('d',.25) # Pour le capteur US
 temps_BU = Value('d',0.001) # Pour le bumper
 #------------------------------------------------
 
@@ -153,9 +154,9 @@ def controleur():
                 Flag = Flag_BU.value
             
             Verrou_memory.acquire()
-            indice.value = indice.value + 1
-            mem_Cmd[indice.value] = Commande
-            mem_Flag[indice.value] = Flag   
+            
+            mem_Cmd.value = Commande
+            mem_Flag.value = Flag   
             Verrou_memory.release()
 
 # Permet l'affichage sur l'écran (I suppose)
@@ -193,10 +194,10 @@ def ecran(n):
             Verrou.acquire()
             # Direction : Vers le Haut
             if Direction_Robot.value == Direction.Up.value:
-                if mem_Cmd[indice.value] == Cmd.Front.value:
+                if mem_Cmd.value == Cmd.Front.value:
                     # Pour aller tout droit
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value-1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
-                if mem_Cmd[indice.value] == Cmd.Left.value:
+                if mem_Cmd.value == Cmd.Left.value:
                     # Pour aller à droite
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value+1)%taille_grille] = Case.Blank.value,Case.Robot.value
                 else :
@@ -205,10 +206,10 @@ def ecran(n):
             
             # Direction : Vers le Bas
             if Direction_Robot.value == Direction.Down.value:
-                if mem_Cmd[indice.value] == Cmd.Front.value:
+                if mem_Cmd.value == Cmd.Front.value:
                     # Pour aller tout droit
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value+1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
-                if mem_Cmd[indice.value] == Cmd.Left.value:
+                if mem_Cmd.value == Cmd.Left.value:
                     # Pour aller à droite
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value-1)%taille_grille] = Case.Blank.value,Case.Robot.value
                 else :
@@ -217,10 +218,10 @@ def ecran(n):
             
             # Direction : Vers la droite
             if Direction_Robot.value == Direction.Right.value:
-                if mem_Cmd[indice.value] == Cmd.Front.value:
+                if mem_Cmd.value == Cmd.Front.value:
                     # Pour aller tout droit
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value+1)%taille_grille] = Case.Blank.value,Case.Robot.value
-                if mem_Cmd[indice.value] == Cmd.Left.value:
+                if mem_Cmd.value == Cmd.Left.value:
                     # Pour aller à droite
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value+1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
                 else :
@@ -229,10 +230,10 @@ def ecran(n):
             
             # Direction : Vers la Gauche
             if Direction_Robot.value == Direction.Right.value:
-                if mem_Cmd[indice.value] == Cmd.Front.value:
+                if mem_Cmd.value == Cmd.Front.value:
                     # Pour aller tout droit
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value-1)%taille_grille] = Case.Blank.value,Case.Robot.value
-                if mem_Cmd[indice.value] == Cmd.Left.value:
+                if mem_Cmd.value == Cmd.Left.value:
                     # Pour aller à droite
                     grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value-1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
                 else :
@@ -243,7 +244,6 @@ def ecran(n):
 
             effacer_ecran()
             print(grille_loc)
-            print(indice.value)
 
 
 # Permet de rechercher la position du robot dans la grille
@@ -396,9 +396,8 @@ if __name__ == "__main__" :
     Cmd_US = Value('i',0)
     Cmd_BU = Value('i',0)
     # Les mémoires partagées :
-    indice = Value('i',0) # Indices permettant la numérotation ainsi que l'écriture des commandes
-    mem_Cmd = Array('i',[0 for i in range(100000)])  # tableau partagé des commandes
-    mem_Flag = Array('i',[0 for i in range(100000)])  # Tableau partagé des drapeaux
+    mem_Cmd = Value('i',0)  # Commande à transmettre
+    mem_Flag = Value('i',0)  # Flag à transmettre
     
     taille_grille = 5
     # while taille_grille == 0:
@@ -416,7 +415,7 @@ if __name__ == "__main__" :
 
     Process_Ecran.start()
     Process_position.start()
-    Process_IR.start()
-    Process_US.start()
-    Process_BU.start()
     Process_Controleur.start()
+    Process_US.start()
+    Process_IR.start()
+    Process_BU.start()

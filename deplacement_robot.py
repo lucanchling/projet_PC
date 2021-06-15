@@ -74,16 +74,25 @@ def en_rouge() : print(CL_RED,end='')
 #------------------------------------------------
 # Enumeration pour de la clarté dans le code 
 # Utilisation en name_of_class.{}
+
 # Pour les commandes :
 class Cmd(Enum):
     Front = 1
     Rigth = 2
     Left = 3
+
 # Pour les différentes valeurs dans la grille :
 class Case(Enum):
     Blank = 0
     Obstacle = 1
     Robot = 2
+
+# Pour la direction du déplacement du robot :
+class Direction(Enum):
+    Up = 0
+    Down = 1
+    Right = 2
+    Left = 3
 #------------------------------------------------
 
 ##################
@@ -139,31 +148,61 @@ def controleur():
 def ecran(n):
     print(grille(n))
     tic = time.time()
-    # while True:
-    #     # Pour le faire toutes les temps_Ecran secondes
-    #     if (tic-time.time())%temps_Ecran.value == 0:
+    while True:
+        # Pour le faire toutes les temps_Ecran secondes
+        if (tic-time.time())%temps_Ecran.value == 0:
+            Verrou.acquire()
+            grille_loc = sa.attach("shm://grille")
+            # Pour connaître la direction du robot :
+            grille_loc[Robot_X.value%taille_grille][Robot_Y.value%taille_grille],grille_loc[(Robot_X.value-1)%taille_grille][(Robot_Y.value)%taille_grille] = Case.Blank.value,Case.Robot.value
+            
+            for ligne in range(taille_grille):
+                for colonne in range(taille_grille):
+                    if grille_loc[ligne][colonne] == Case.Robot.value:
+                        posX,posY = ligne,colonne
+            deltaX = Robot_X.value-posX
+            deltaY = Robot_Y.value-posY
+            # Pour ignorer lorsque il y a 'téléportation' dans la grille
+            if abs(deltaX) == taille_grille-1 or abs(deltaY) == taille_grille-1:
+                pass
+            else:
+                if deltaY == 0 and deltaX > 0:
+                    Direction_Robot.value = Direction.Up.value
+                if deltaY == 0 and deltaX < 0 :
+                        Direction_Robot.value = Direction.Down.value
+                if deltaX == 0 and deltaY > 0:
+                    Direction_Robot.value = Direction.Left.value
+                if deltaX == 0 and deltaY < 0:
+                    Direction_Robot.value = Direction.Right.value
 
-    #         Verrou.acquire()
-    #         # if mem_Cmd[indice] == Cmd.Front.value:
-    #         #     #Pour avancer
-    #         #     print()
-    #         # if mem_Cmd[indice] == Cmd.Left.value:
-    #         #     #Pour aller à droite
-    #         #     print()
-    #         # else :
-    #         #     #Pour aller à gauche
-    #         #     print()
+            
 
-    #         Verrou.release()
+            effacer_ecran()
+            print(grille_loc)
+            print(Direction(Direction_Robot.value))
+            # if mem_Cmd[indice] == Cmd.Front.value:
+            #     #Pour avancer
+            #     print()
+            # if mem_Cmd[indice] == Cmd.Left.value:
+            #     #Pour aller à droite
+            #     print()
+            # else :
+            #     #Pour aller à gauche
+            #     print()
+
+            Verrou.release()
 
 # Permet de rechercher la position du robot dans la grille
 def position_robot():
-    grille = sa.attach("shm://grille")
-    for ligne in range(0,taille_grille):
-        for colonne in range(0,taille_grille):
-            if grille[ligne][colonne] == Case.Robot.value:
-                Robot_X.value = ligne
-                Robot_Y.value = colonne
+    while True:
+        grille = sa.attach("shm://grille")
+        for ligne in range(0,taille_grille):
+            for colonne in range(0,taille_grille):
+                if grille[ligne][colonne] == Case.Robot.value:
+                    Verrou.acquire()
+                    Robot_X.value = ligne
+                    Robot_Y.value = colonne
+                    Verrou.release()
 
 # Permet la gestion des capteurs (Left & Right)
 def ir():
@@ -187,10 +226,11 @@ if __name__ == "__main__" :
     # Déclaration des différentes Variables :
     
     Verrou = Lock()
-
     # Position du robot :
     Robot_X = Value('i',0)
     Robot_Y = Value('i',0)
+    # Direction du Robot :
+    Direction_Robot = Value('i',0)
     # Les différentes distances :
     Dist_Front = Value('d',0.0)
     Dist_Left = Value('d',0.0)
@@ -215,5 +255,4 @@ if __name__ == "__main__" :
     Process_position = Process(target=position_robot)
 
     Process_Ecran.start()
-    time.sleep(1)
     Process_position.start()

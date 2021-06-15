@@ -142,10 +142,21 @@ def controleur():
         if (tic-time.time())%temps_Controleur.value == 0:
             Commande = Cmd.Front.value
             Flag = False
-            Verrou.acquire()
-            mem_Cmd[indice] = Commande
-            mem_Flag[indice] = Flag   
-            Verrou.release()
+            if Flag_IR.value == True:
+                Commande = Cmd_IR.value
+                Flag = Flag_IR.value
+            if Flag_US.value == True:
+                Commande = Cmd_US.value
+                Flag = Flag_US.value
+            if Flag_BU.value == True:
+                Commande = Cmd_BU.value
+                Flag = Flag_BU.value
+            
+            Verrou_memory.acquire()
+            indice.value = indice.value + 1
+            mem_Cmd[indice.value] = Commande
+            mem_Flag[indice.value] = Flag   
+            Verrou_memory.release()
 
 # Permet l'affichage sur l'écran (I suppose)
 def ecran(n):
@@ -154,17 +165,18 @@ def ecran(n):
     while True:
         # Pour le faire toutes les temps_Ecran secondes
         if (tic-time.time())%temps_Ecran.value == 0:
-            Verrou.acquire()
             grille_loc = sa.attach("shm://grille")
             # Pour connaître la direction du robot :
-            grille_loc[Robot_Y.value%taille_grille][Robot_X.value%taille_grille],grille_loc[(Robot_Y.value)%taille_grille][(Robot_X.value-1)%taille_grille] = Case.Blank.value,Case.Robot.value
             
+
             for ligne in range(taille_grille):
                 for colonne in range(taille_grille):
                     if grille_loc[ligne][colonne] == Case.Robot.value:
                         posX,posY = colonne,ligne
             deltaX = Robot_X.value-posX
             deltaY = Robot_Y.value-posY
+            
+            
             # Pour ignorer lorsque il y a 'téléportation' dans la grille
             if abs(deltaX) == taille_grille-1 or abs(deltaY) == taille_grille-1:
                 pass
@@ -177,22 +189,62 @@ def ecran(n):
                     Direction_Robot.value = Direction.Left.value
                 if deltaY == 0 and deltaX < 0:
                     Direction_Robot.value = Direction.Right.value
-
             
+            Verrou.acquire()
+            # Direction : Vers le Haut
+            if Direction_Robot.value == Direction.Up.value:
+                if mem_Cmd[indice.value] == Cmd.Front.value:
+                    # Pour aller tout droit
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value-1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
+                if mem_Cmd[indice.value] == Cmd.Left.value:
+                    # Pour aller à droite
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value+1)%taille_grille] = Case.Blank.value,Case.Robot.value
+                else :
+                    # Pour aller à gauche
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value-1)%taille_grille] = Case.Blank.value,Case.Robot.value
+            
+            # Direction : Vers le Bas
+            if Direction_Robot.value == Direction.Down.value:
+                if mem_Cmd[indice.value] == Cmd.Front.value:
+                    # Pour aller tout droit
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value+1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
+                if mem_Cmd[indice.value] == Cmd.Left.value:
+                    # Pour aller à droite
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value-1)%taille_grille] = Case.Blank.value,Case.Robot.value
+                else :
+                    # Pour aller à gauche
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value+1)%taille_grille] = Case.Blank.value,Case.Robot.value
+            
+            # Direction : Vers la droite
+            if Direction_Robot.value == Direction.Right.value:
+                if mem_Cmd[indice.value] == Cmd.Front.value:
+                    # Pour aller tout droit
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value+1)%taille_grille] = Case.Blank.value,Case.Robot.value
+                if mem_Cmd[indice.value] == Cmd.Left.value:
+                    # Pour aller à droite
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value+1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
+                else :
+                    # Pour aller à gauche
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value-1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
+            
+            # Direction : Vers la Gauche
+            if Direction_Robot.value == Direction.Right.value:
+                if mem_Cmd[indice.value] == Cmd.Front.value:
+                    # Pour aller tout droit
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[Robot_Y.value][(Robot_X.value-1)%taille_grille] = Case.Blank.value,Case.Robot.value
+                if mem_Cmd[indice.value] == Cmd.Left.value:
+                    # Pour aller à droite
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value-1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
+                else :
+                    # Pour aller à gauche
+                    grille_loc[Robot_Y.value][Robot_X.value],grille_loc[(Robot_Y.value+1)%taille_grille][Robot_X.value] = Case.Blank.value,Case.Robot.value
+            
+            Verrou.release()
 
             effacer_ecran()
             print(grille_loc)
-            # if mem_Cmd[indice] == Cmd.Front.value:
-            #     #Pour avancer
-            #     print()
-            # if mem_Cmd[indice] == Cmd.Left.value:
-            #     #Pour aller à droite
-            #     print()
-            # else :
-            #     #Pour aller à gauche
-            #     print()
+            print(indice.value)
 
-            Verrou.release()
 
 # Permet de rechercher la position du robot dans la grille
 def position_robot():
@@ -201,10 +253,10 @@ def position_robot():
         for ligne in range(0,taille_grille):
             for colonne in range(0,taille_grille):
                 if grille[ligne][colonne] == Case.Robot.value:
-                    Verrou.acquire()
+                    Verrou_Position.acquire()
                     Robot_X.value = colonne
                     Robot_Y.value = ligne
-                    Verrou.release()
+                    Verrou_Position.release()
 
 # Permet la gestion des capteurs (Left & Right)
 def ir():
@@ -324,6 +376,8 @@ if __name__ == "__main__" :
     # Déclaration des différentes Variables :
     
     Verrou = Lock()
+    Verrou_Position = Lock()
+    Verrou_memory = Lock()
     # Position du robot :
     Robot_X = Value('i',0)
     Robot_Y = Value('i',0)
@@ -355,6 +409,14 @@ if __name__ == "__main__" :
     
     Process_Ecran = Process(target=ecran, args=(taille_grille,))
     Process_position = Process(target=position_robot)
+    Process_IR = Process(target=ir)
+    Process_US = Process(target=us)
+    Process_BU = Process(target=bumper)
+    Process_Controleur = Process(target=controleur)
 
     Process_Ecran.start()
     Process_position.start()
+    Process_IR.start()
+    Process_US.start()
+    Process_BU.start()
+    Process_Controleur.start()

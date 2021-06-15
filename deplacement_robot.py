@@ -182,7 +182,6 @@ def ecran(n):
 
             effacer_ecran()
             print(grille_loc)
-            print(Direction(Direction_Robot.value))
             # if mem_Cmd[indice] == Cmd.Front.value:
             #     #Pour avancer
             #     print()
@@ -208,86 +207,104 @@ def position_robot():
                     Verrou.release()
 
 # Permet la gestion des capteurs (Left & Right)
-# def ir():
-#     tic = time.time()
-#     while True :
-#         # Pour le faire toutes les temps_Ir secondes
-#         if (tic-time.time())%temps_Ir.value == 0:
-#             grille = sa.attach("shm://grille")
-#             # Différents cas pour chacune des directions possibles du robot :
-#             # Direction : Vers le Haut
-#             if Direction_Robot.value == Direction.Up.value:
-#                 # Capteur gauche                                                        # Capteur Droit :
-#                 if grille[Robot_X.value-1][Robot_Y.value] == Case.Obstacle.value or grille[Robot_X.value+1][Robot_Y.value] == Case.Obstacle.value:
-#                     Flag_IR.value = True
-#                     if grille[Robot_X.value-1][Robot_Y.value] == Case.Obstacle.value and grille[Robot_X.value+1][Robot_Y.value] == Case.Obstacle.value:
-#                         Cmd_IR.value = Cmd.Back.value
-#                     elif grille[Robot_X.value-1][Robot_Y.value] == Case.Obstacle.value :
-#                         Cmd_IR.value = Cmd.Left.value
-#                     else:
-#                         Cmd_IR.value = Cmd.Right.value
-#                 else:
-#                     Flag_IR.value = False
-#             # DIrection : Vers le Bas
-#             if Direction_Robot.value == Direction.Down.value:
-#                 # Capteur gauche                                                        # Capteur Droit :
-#                 if grille[Robot_X.value+1][Robot_Y.value] == Case.Obstacle.value or grille[Robot_X.value-1][Robot_Y.value] == Case.Obstacle.value:
-#                     Flag_IR.value = True
-#                     if grille[Robot_X.value+1][Robot_Y.value] == Case.Obstacle.value and grille[Robot_X.value-1][Robot_Y.value] == Case.Obstacle.value:
-#                         Cmd_IR.value = Cmd.Back.value
-#                     elif grille[Robot_X.value+1][Robot_Y.value] == Case.Obstacle.value :
-#                         Cmd_IR.value = Cmd.Left.value
-#                     else:
-#                         Cmd_IR.value = Cmd.Right.value
-#                 else:
-#                     Flag_IR.value = False
-#             # Direction : Vers la Gauche
-#             if Direction_Robot.value == Direction.Left.value:
-#                 # Capteur gauche                                                        # Capteur Droit :
-#                 if grille[Robot_X.value][Robot_Y.value+1] == Case.Obstacle.value or grille[Robot_X.value][Robot_Y.value-1] == Case.Obstacle.value:
-#                     Flag_IR.value = True
-#                     if grille[Robot_X.value][Robot_Y.value+1] == Case.Obstacle.value and grille[Robot_X.value][Robot_Y.value-1] == Case.Obstacle.value:
-#                         Cmd_IR.value = Cmd.Back.value
-#                     elif grille[Robot_X.value][Robot_Y.value+1] == Case.Obstacle.value :
-#                         Cmd_IR.value = Cmd.Left.value
-#                     else:
-#                         Cmd_IR.value = Cmd.Right.value
-#                 else:
-#                     Flag_IR.value = False
-#             # Direction : Vers la Droite
-#             if Direction_Robot.value == Direction.Right.value:
-#                 # Capteur gauche                                                        # Capteur Droit :
-#                 if grille[Robot_X.value][Robot_Y.value-1] == Case.Obstacle.value or grille[Robot_X.value][Robot_Y.value+1] == Case.Obstacle.value:
-#                     Flag_IR.value = True
-#                     if grille[Robot_X.value][Robot_Y.value-1] == Case.Obstacle.value and grille[Robot_X.value][Robot_Y.value+1] == Case.Obstacle.value:
-#                         Cmd_IR.value = Cmd.Back.value
-#                     elif grille[Robot_X.value][Robot_Y.value-1] == Case.Obstacle.value :
-#                         Cmd_IR.value = Cmd.Left.value
-#                     else:
-#                         Cmd_IR.value = Cmd.Right.value
-#                 else:
-#                     Flag_IR.value = False
+def ir():
+    tic = time.time()
+    while True :
+        # Pour le faire toutes les temps_Ir secondes
+        if (tic-time.time())%temps_Ir.value == 0:
+            grille = sa.attach("shm://grille")
+            # Différents cas pour chacune des directions possibles du robot :
+            # Direction : Vers le Haut
+            if Direction_Robot.value == Direction.Up.value:
+                # Capteur gauche                                                        # Capteur Droit :
+                if grille[(Robot_Y.value-1)%taille_grille][Robot_X.value] == Case.Obstacle.value or grille[(Robot_Y.value+1)%taille_grille][Robot_X.value] == Case.Obstacle.value:
+                    Flag_IR.value = True
+                    if grille[(Robot_Y.value-1)%taille_grille][Robot_X.value] == Case.Obstacle.value and grille[(Robot_Y.value+1)%taille_grille][Robot_X.value] == Case.Obstacle.value:
+                        Cmd_IR.value = Cmd.Back.value
+                    elif grille[(Robot_Y.value-1)%taille_grille][Robot_X.value] == Case.Obstacle.value :
+                        Cmd_IR.value = Cmd.Left.value
+                    else:
+                        Cmd_IR.value = Cmd.Right.value
+                else:
+                    Flag_IR.value = False
+            # DIrection : Vers le Bas
+            if Direction_Robot.value == Direction.Down.value:
+                # Capteur gauche                                                        # Capteur Droit :
+                if grille[(Robot_Y.value+1)%taille_grille][Robot_X.value] == Case.Obstacle.value or grille[Robot_Y.value-1][Robot_X.value] == Case.Obstacle.value:
+                    Flag_IR.value = True
+                    if grille[(Robot_Y.value+1)%taille_grille][Robot_X.value] == Case.Obstacle.value and grille[(Robot_Y.value-1)%taille_grille][Robot_X.value] == Case.Obstacle.value:
+                        Cmd_IR.value = Cmd.Back.value
+                    elif grille[(Robot_Y.value+1)%taille_grille][Robot_X.value] == Case.Obstacle.value :
+                        Cmd_IR.value = Cmd.Left.value
+                    else:
+                        Cmd_IR.value = Cmd.Right.value
+                else:
+                    Flag_IR.value = False
+            # Direction : Vers la Gauche
+            if Direction_Robot.value == Direction.Left.value:
+                # Capteur gauche                                                        # Capteur Droit :
+                if grille[Robot_Y.value][(Robot_X.value+1)%taille_grille] == Case.Obstacle.value or grille[Robot_Y.value][(Robot_X.value-1)%taille_grille] == Case.Obstacle.value:
+                    Flag_IR.value = True
+                    if grille[Robot_Y.value][(Robot_X.value+1)%taille_grille] == Case.Obstacle.value and grille[Robot_Y.value][(Robot_X.value-1)%taille_grille] == Case.Obstacle.value:
+                        Cmd_IR.value = Cmd.Back.value
+                    elif grille[Robot_Y.value][(Robot_X.value+1)%taille_grille] == Case.Obstacle.value :
+                        Cmd_IR.value = Cmd.Left.value
+                    else:
+                        Cmd_IR.value = Cmd.Right.value
+                else:
+                    Flag_IR.value = False
+            # Direction : Vers la Droite
+            if Direction_Robot.value == Direction.Right.value:
+                # Capteur gauche                                                        # Capteur Droit :
+                if grille[Robot_Y.value][(Robot_X.value-1)%taille_grille] == Case.Obstacle.value or grille[Robot_Y.value][(Robot_X.value+1)%taille_grille] == Case.Obstacle.value:
+                    Flag_IR.value = True
+                    if grille[Robot_Y.value][(Robot_X.value-1)%taille_grille] == Case.Obstacle.value and grille[Robot_Y.value][(Robot_X.value+1)%taille_grille] == Case.Obstacle.value:
+                        Cmd_IR.value = Cmd.Back.value
+                    elif grille[Robot_Y.value][(Robot_X.value-1)%taille_grille] == Case.Obstacle.value :
+                        Cmd_IR.value = Cmd.Left.value
+                    else:
+                        Cmd_IR.value = Cmd.Right.value
+                else:
+                    Flag_IR.value = False
 
 # Permet la gestion du capteur (US = Front)
-# def us():
-#     tic = time.time()
-#     while True:
-#         # Pour le faire toutes les temps_Ecran secondes
-#         if (tic-time.time())%temps_US.value == 0:
-#             grille = sa.attach("shm://grille")
-#             # Différents cas pour chacune des directions possibles du robot :
-#             # Direction : Vers le Haut
-#             if Direction_Robot.value == Direction.Up.value:
-#                 if 
-#             # DIrection : Vers le Bas
-#             if Direction_Robot.value == Direction.Down.value:
+def us():
+    tic = time.time()
+    while True:
+        # Pour le faire toutes les temps_Ecran secondes
+        if (tic-time.time())%temps_US.value == 0:
+            grille = sa.attach("shm://grille")
+            # Différents cas pour chacune des directions possibles du robot :
+            # Direction : Vers le Haut
+            if Direction_Robot.value == Direction.Up.value:
+                if grille[(Robot_Y.value-1)%taille_grille][Robot_X.value] == Case.Obstacle.value:
+                    Flag_US.value = True
+                    Cmd_US.value = Cmd.Back.value
+                else:
+                    Flag_US.value = False
+            # DIrection : Vers le Bas
+            if Direction_Robot.value == Direction.Down.value:
+                if grille[(Robot_Y.value+1)%taille_grille][Robot_X.value] == Case.Obstacle.value:
+                    Flag_US.value = True
+                    Cmd_US.value = Cmd.Back.value
+                else:
+                    Flag_US.value = False
                 
-#             # Direction : Vers la Gauche
-#             if Direction_Robot.value == Direction.Left.value:
+            # Direction : Vers la Gauche
+            if Direction_Robot.value == Direction.Left.value:
+                if grille[Robot_Y.value][(Robot_X.value-1)%taille_grille] == Case.Obstacle.value:
+                    Flag_US.value = True
+                    Cmd_US.value = Cmd.Back.value
+                else:
+                    Flag_US.value = False
                 
-#             # Direction : Vers la Droite
-#             if Direction_Robot.value == Direction.Right.value:
-                
+            # Direction : Vers la Droite
+            if Direction_Robot.value == Direction.Right.value:
+                if grille[Robot_Y.value][(Robot_X.value+1)%taille_grille] == Case.Obstacle.value:
+                    Flag_US.value = True
+                    Cmd_US.value = Cmd.Back.value
+                else:
+                    Flag_US.value = False
 
 # Permet la gestion du contact en front
 def bumper():

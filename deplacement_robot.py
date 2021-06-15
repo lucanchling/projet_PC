@@ -312,7 +312,11 @@ def bumper():
     while True:
         # Pour le faire toutes les temps_Ecran secondes
         if (tic-time.time())%temps_BU.value == 0:
-            return False
+            if grille[Robot_Y.value][Robot_X.value] == Case.Obstacle.value:
+                Flag_BU.value = True
+                Cmd_BU.value = Cmd.Back.value
+            else:
+                Flag_BU.value = False
 
 #------------------------------------------------
 if __name__ == "__main__" :
